@@ -1,29 +1,37 @@
 import React from "react";
 import "../styles/Sidebar.css";
-
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import PersonIcon from "@mui/icons-material/Person";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import LogoutIcon from "@mui/icons-material/Logout";
 const Sidebar = () => {
   return (
-    <aside className="sidebar">
-      <div className="sidebar-header">
-        <a href="/" className="sidebar-logo">
-          LOGO
-        </a>
+    <div className="sidebar">
+      <div className="top">
+        <span className="logo">Cloud</span>
       </div>
-      <nav className="sidebar-menu">
-        <a href="/" className="sidebar-link">
-          Home
-        </a>
-        <a href="/dashboard" className="sidebar-link">
-          Dashboard
-        </a>
-        <a href="/settings" className="sidebar-link">
-          Settings
-        </a>
-        <a href="/about" className="sidebar-link">
-          About
-        </a>
-      </nav>
-    </aside>
+      <hr />
+      <div className="centre">
+        <ul className="ull">
+          <li>
+            <DashboardIcon />
+            <span>Dashboard</span>
+          </li>
+          <li>
+            <PersonIcon />
+            <span>Users</span>
+          </li>
+          <li>
+            <AccountCircleIcon />
+            <span>Profile</span>
+          </li>
+          <li>
+            <LogoutIcon />
+            <span>Logout</span>
+          </li>
+        </ul>
+      </div>
+    </div>
   );
 };
 

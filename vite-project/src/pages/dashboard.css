@@ -1,0 +1,14 @@
+.dashboard {
+  display: flex;
+}
+
+.homeContainer {
+  flex: 6;
+}
+.widgets,
+.charts {
+  display: flex;
+}
+.charts {
+  padding: 5px 20px;
+}
