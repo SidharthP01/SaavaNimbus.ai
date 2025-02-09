@@ -10,11 +10,11 @@ const InstanceChartContainer = () => {
   // Fetch instances initially and set the first one as default
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:5000/api/data")
+      .get("http://127.0.0.1:5000/api/data")  // This can be used to fetch all data for instance selection
       .then((response) => {
         if (response.data.length > 0) {
           const firstInstance = response.data[0].InstanceId;
-          setSelectedInstance(firstInstance);
+          setSelectedInstance(firstInstance); // Set the first instance by default
         }
       })
       .catch((error) => console.error("Error fetching instance IDs:", error));
@@ -28,18 +28,19 @@ const InstanceChartContainer = () => {
         .then((response) => {
           const formattedData = response.data.map((item) => ({
             timestamp: item.Timestamp_IST,
-            cpuUtilization: item.CPUUtilization_Avg || 0,
+            cpuUtilization: parseFloat(item.CPUUtilization_Avg) || 0, // Ensure it's a float
           }));
+          console.log("Fetched CPU Data:", formattedData); // Debugging
           setCpuData(formattedData);
         })
         .catch((error) => console.error("Error fetching CPU data:", error));
     }
   }, [selectedInstance]);
-
+  
   return (
     <div>
       <InstanceWidget setSelectedInstance={setSelectedInstance} />
-      <Chart data={cpuData} />
+      {cpuData.length > 0 ? <Chart data={cpuData} /> : <p>Loading chart...</p>}
     </div>
   );
 };

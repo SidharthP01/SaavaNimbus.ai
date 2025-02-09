@@ -26,13 +26,24 @@ const Widget = ({ setSelectedInstance }) => {
       <div className="scroll-box">
         {instanceIds.length > 0 ? (
           instanceIds.map((id, index) => (
+            // <button
+            //   key={index}
+            //   className="instance-button"
+            //   onClick={() => setSelectedInstance(id)} // Update selected instance
+            // >
+            //   {id}
+            // </button>
             <button
-              key={index}
-              className="instance-button"
-              onClick={() => setSelectedInstance(id)} // Update selected instance
-            >
-              {id}
-            </button>
+  key={index}
+  className="instance-button"
+  onClick={() => {
+    console.log("Instance Selected:", id); // Debugging
+    setSelectedInstance(id);
+  }}
+>
+  {id}
+</button>
+
           ))
         ) : (
           <p>No data available</p>
