@@ -1,5 +1,6 @@
 import Sidebar from "../components/Sidebar";
 import Widget from "../components/Widget";
+import InstanceWidget from "../components/InstanceWidget"
 import React from "react";
 import "./dashboard.css";
 import Navbar from "../components/Navbar";
@@ -13,7 +14,7 @@ const Dashboard = () => {
         <Navbar />
         <div className="widgets">
           <Widget />
-          <Widget />
+          <InstanceWidget />
           <Widget />
         </div>
         <div className="charts">

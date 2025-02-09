@@ -1,9 +1,11 @@
 from flask import Flask, jsonify
+from flask_cors import CORS  # Import CORS
 import mysql.connector
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
-# MySQL Database Configuration
+# MySQL Configuration
 db_config = {
     "host": "3.82.157.209",
     "user": "metrics_user",
@@ -12,36 +14,18 @@ db_config = {
     "port": 3306
 }
 
-# Function to establish a database connection
 def get_db_connection():
-    try:
-        conn = mysql.connector.connect(**db_config)
-        return conn
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
-        return None
+    return mysql.connector.connect(**db_config)
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
-
-@app.route("/mem")
-def hello_cloud():
-    return "<p>Hello, Cloud</p>"
-
-@app.route("/data")
+@app.route("/api/data", methods=["GET"])
 def get_data():
     conn = get_db_connection()
-    if conn is None:
-        return jsonify({"error": "Database connection failed"}), 500
-    
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM ec2_metrics")  # Replace with your actual table name
+    cursor.execute("SELECT InstanceId FROM ec2_metrics")  # Fetch only InstanceId
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
-    
     return jsonify(rows)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(debug=True)
