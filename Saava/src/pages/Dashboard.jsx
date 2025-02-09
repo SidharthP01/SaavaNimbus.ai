@@ -6,6 +6,7 @@ import "./dashboard.css";
 import Navbar from "../components/Navbar";
 import Featured from "../components/Featured";
 import Chart from "../components/Chart";
+import Radarchart from "../components/Radarchart";
 const Dashboard = () => {
   return (
     <div className="dashboard">
@@ -15,7 +16,7 @@ const Dashboard = () => {
         <div className="widgets">
           <Widget />
           <InstanceWidget />
-          <Widget />
+          <Radarchart />
         </div>
         <div className="charts">
           <Featured />

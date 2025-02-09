@@ -1,43 +1,118 @@
 /* Widget Box Styling */
-.widget-box {
-  width: 220px; /* Smaller width */
-  height: 180px; /* Smaller height */
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  font-family: Arial, sans-serif;
-  font-size: 12px; /* Adjust text size */
-}
-
 /* Scrollable List Container */
-.scroll-box {
-  max-height: 120px; /* Reduced height */
+/* .scroll-box {
+  max-height: 120px; 
   overflow-y: auto;
   border: 1px solid #ccc;
   padding: 5px;
   border-radius: 5px;
   background: #f9f9f9;
-}
+} */
 
 /* Scrollbar Styling */
-.scroll-box::-webkit-scrollbar {
+/* .scroll-box::-webkit-scrollbar {
   width: 4px;
-}
+} */
 
-.scroll-box::-webkit-scrollbar-thumb {
+/* .scroll-box::-webkit-scrollbar-thumb {
   background-color: #888;
   border-radius: 5px;
-}
+} */
 
-.scroll-box::-webkit-scrollbar-track {
+/* .scroll-box::-webkit-scrollbar-track {
   background: #f1f1f1;
-}
+} */
 
 /* Instance ID Styling */
-.instance-item {
+/* .instance-item {
   margin: 3px 0;
-  font-size: 12px; /* Adjusted for smaller box */
+  font-size: 12px; 
   padding: 3px;
   border-bottom: 1px solid #ddd;
+} */
+
+/* CSS */
+/* CSS */
+.instance-button {
+  align-items: center;
+  appearance: none;
+  background-image: radial-gradient(
+    100% 100% at 100% 0,
+    #5adaff 0,
+    #5468ff 100%
+  );
+  border: 0;
+  border-radius: 6px;
+  box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,
+    rgba(45, 35, 66, 0.3) 0 7px 13px -3px, rgba(58, 65, 111, 0.5) 0 -3px 0 inset;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: "JetBrains Mono", monospace;
+  height: 48px;
+  justify-content: center;
+  line-height: 1;
+  list-style: none;
+  overflow: hidden;
+  padding-left: 16px;
+  padding-right: 16px;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow 0.15s, transform 0.15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow, transform;
+  font-size: 18px;
+}
+
+.instance-button:focus {
+  box-shadow: #3c4fe0 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px,
+    rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
+}
+
+.instance-button:hover {
+  box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px,
+    rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #3c4fe0 0 -3px 0 inset;
+  transform: translateY(-2px);
+}
+
+.instance-button:active {
+  box-shadow: #3c4fe0 0 3px 7px inset;
+  transform: translateY(2px);
+}
+
+.widget-box {
+  gap: 10px;
+  margin: 20px;
+  flex: 1;
+  width: 250px; /* Adjust width */
+  height: auto; /* Allow height to adjust dynamically */
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px; /* Increase padding */
+  font-family: Arial, sans-serif;
+  font-size: 14px; /* Slightly larger text */
+  text-align: center; /* Center the heading */
+}
+
+.button-container {
+  display: flex;
+  flex-wrap: wrap; /* Allow buttons to wrap */
+  justify-content: space-between;
+  justify-content: center; /* Center them horizontally */
+  gap: 20px; /* Space between buttons */
+  padding: 10px; /* Extra padding */
+}
+
+.instance-button {
+  min-width: 80px; /* Ensure buttons have a minimum width */
+  min-height: 40px; /* Adjust height */
+  text-align: center;
+  padding: 10px 15px; /* Proper padding */
+  font-size: 14px; /* Adjust text size */
 }

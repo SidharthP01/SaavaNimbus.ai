@@ -23,7 +23,7 @@ const Widget = ({ setSelectedInstance }) => {
   return (
     <div className="widget-box">
       <h3>Instance IDs</h3>
-      <div className="scroll-box">
+      <div className="button-container">
         {instanceIds.length > 0 ? (
           instanceIds.map((id, index) => (
             <button
@@ -31,7 +31,7 @@ const Widget = ({ setSelectedInstance }) => {
               className="instance-button"
               onClick={() => setSelectedInstance(id)} // Update selected instance
             >
-              {id}
+              INS {index + 1}
             </button>
           ))
         ) : (
