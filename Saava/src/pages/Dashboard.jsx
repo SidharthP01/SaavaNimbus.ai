@@ -1,6 +1,6 @@
 import Sidebar from "../components/Sidebar";
 import Widget from "../components/Widget";
-import InstanceWidget from "../components/InstanceWidget"
+import InstanceWidget from "../components/InstanceWidget";
 import React from "react";
 import "./dashboard.css";
 import Navbar from "../components/Navbar";
