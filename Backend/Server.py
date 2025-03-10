@@ -25,7 +25,7 @@ def get_db_connection():
         print(f"Error: {err}")
         return None
 
-# Route 1: Fetch all data from the table (Limited to 100 rows)
+# Route 1: Fetch all data from the ec2_metrics table (Limited to 100 rows)
 @app.route("/data", methods=["GET"])
 def get_all_data():
     conn = get_db_connection()
@@ -135,6 +135,20 @@ def signup():
         cursor.close()
         conn.close()
         return jsonify({"success": False, "message": str(err)}), 400
+
+# New Route 7: Fetch all data from the Prediction table (Limited to 100 rows)
+@app.route("/prediction_data", methods=["GET"])
+def get_prediction_data():
+    conn = get_db_connection()
+    if conn is None:
+        return jsonify({"error": "Database connection failed"}), 500
+
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM prediction LIMIT 100")
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return jsonify(rows)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

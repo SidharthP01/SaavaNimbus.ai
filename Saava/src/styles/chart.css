@@ -1,12 +1,15 @@
 .chart {
-  display: flex;
-  flex: 5;
-  -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
-  box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
-  padding: 10px;
-  color: gray;
-  margin-left: 10px;
+  flex: 2; /* Takes more space than widgets */
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 0; /* Remove external margin, handled by parent */
 }
-.title {
-  margin-bottom: 20px;
+
+.chart-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
 }

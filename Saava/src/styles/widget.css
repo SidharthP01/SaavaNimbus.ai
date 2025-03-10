@@ -1,11 +1,25 @@
 .widget {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
   flex: 1;
-  -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
-  box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
-  border-radius: 10px;
-  height: auto;
-  margin: 10px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 0; /* Remove external margin, handled by parent */
+  min-width: 200px; /* Ensure widgets don’t shrink too much */
+}
+
+.widget-content {
+  text-align: center;
+}
+
+.widget-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.widget-data {
+  font-size: 14px;
+  color: #666;
 }
