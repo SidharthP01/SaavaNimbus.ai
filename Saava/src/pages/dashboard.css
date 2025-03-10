@@ -1,14 +1,51 @@
+/* Main dashboard container */
 .dashboard {
   display: flex;
+  min-height: 100vh;
+  background-color: #f5f7fa; /* Light background for modern look */
 }
 
-.homeContainer {
-  flex: 6;
+/* Sidebar takes fixed width, dashboard-container takes remaining space */
+.dashboard-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
 }
-.widgets,
+
+/* Content area for widgets and charts */
+.dashboard-content {
+  flex: 1;
+}
+
+/* Widgets row */
+.widgets {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 20px; /* Consistent spacing between widgets */
+  margin-bottom: 20px;
+}
+
+/* Charts row */
 .charts {
   display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 20px; /* Consistent spacing between charts */
 }
-.charts {
-  padding: 5px 20px;
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard {
+    flex-direction: column;
+  }
+
+  .dashboard-container {
+    padding: 10px;
+  }
+
+  .widgets,
+  .charts {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
