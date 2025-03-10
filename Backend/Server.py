@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 import mysql.connector
 from flask_cors import CORS
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 CORS(app)  # Allow frontend to fetch data
@@ -33,11 +33,10 @@ def get_all_data():
         return jsonify({"error": "Database connection failed"}), 500
 
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM ec2_metrics LIMIT 100")  # Limited for efficiency
+    cursor.execute("SELECT * FROM ec2_metrics LIMIT 100")
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
-
     return jsonify(rows)
 
 # Route 2: Fetch only InstanceId values
@@ -48,63 +47,94 @@ def get_instance_ids():
         return jsonify({"error": "Database connection failed"}), 500
 
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT DISTINCT InstanceId FROM ec2_metrics")  # Fetch only InstanceId
+    cursor.execute("SELECT DISTINCT InstanceId FROM ec2_metrics")
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
-
     return jsonify(rows)
 
-# Route 3: Fetch CPU utilization data for a specific instance with optional pagination
+# Route 3: Fetch CPU utilization data for a specific instance (last 7 days)
 @app.route("/api/cpu/<instance_id>", methods=["GET"])
 def get_cpu_data(instance_id):
     print(f"Received request for instance: {instance_id}")
-
-    # Pagination parameters
-    limit = request.args.get("limit", default=50, type=int)  # Default: 50 rows
-    offset = request.args.get("offset", default=0, type=int)
+    one_week_ago = datetime.now() - timedelta(days=7)
 
     conn = get_db_connection()
     if conn is None:
         return jsonify({"error": "Database connection failed"}), 500
 
     cursor = conn.cursor(dictionary=True)
-    # cursor.execute("""
-    #     SELECT Timestamp_IST, CPUUtilization_Avg 
-    #     FROM ec2_metrics 
-    #     WHERE InstanceId = %s
-    #     ORDER BY Timestamp_IST
-    #     LIMIT %s OFFSET %s
-    # """, (instance_id, limit, offset))
     cursor.execute("""
         SELECT Timestamp_IST, CPUUtilization_Avg 
         FROM ec2_metrics 
-        WHERE InstanceId = %s
+        WHERE InstanceId = %s 
+        AND Timestamp_IST >= %s
         ORDER BY Timestamp_IST
-    """, (instance_id,))
+    """, (instance_id, one_week_ago))
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
 
     print(f"Fetched {len(rows)} rows from DB")
-
-    # Convert CPUUtilization_Avg to float and Timestamp_IST to string format
     for row in rows:
         row["CPUUtilization_Avg"] = float(row["CPUUtilization_Avg"]) if row["CPUUtilization_Avg"] else 0.0
         if isinstance(row["Timestamp_IST"], datetime):
-            row["Timestamp_IST"] = row["Timestamp_IST"].strftime('%Y-%m-%d %H:%M:%S')  # Convert to string
+            row["Timestamp_IST"] = row["Timestamp_IST"].strftime('%Y-%m-%d %H:%M:%S')
 
-    response_json = json.dumps(rows, indent=2)  # Pretty-print JSON
-    print(response_json[:1000])  # Print only the first 1000 characters for debugging
-
+    response_json = json.dumps(rows, indent=2)
+    print(response_json[:1000])
     return jsonify(rows)
 
-# Route 4: Test API to verify server response
+# Route 4: Test API
 @app.route("/api/cpu/test", methods=["GET"])
 def test_api():
     test_data = [{"Timestamp_IST": "2025-02-09 16:45:00", "CPUUtilization_Avg": 45.5}]
     return jsonify(test_data)
 
+# Route 5: Login
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+
+    conn = get_db_connection()
+    if conn is None:
+        return jsonify({"error": "Database connection failed"}), 500
+
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
+    user = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if user:
+        return jsonify({"success": True, "message": "Login successful"})
+    else:
+        return jsonify({"success": False, "message": "Invalid credentials"}), 401
+
+# Route 6: Sign Up
+@app.route("/api/signup", methods=["POST"])
+def signup():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+
+    conn = get_db_connection()
+    if conn is None:
+        return jsonify({"error": "Database connection failed"}), 500
+
+    cursor = conn.cursor()
+    try:
+        cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({"success": True, "message": "Registration successful"})
+    except mysql.connector.Error as err:
+        cursor.close()
+        conn.close()
+        return jsonify({"success": False, "message": str(err)}), 400
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
-    
