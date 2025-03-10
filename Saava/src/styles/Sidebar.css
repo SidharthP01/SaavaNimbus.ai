@@ -1,8 +1,9 @@
-.sidebar {
+/* .sidebar {
   flex: 1;
   border-right: 0.5px solid rgb(228, 225, 225);
   min-height: 100vh;
   background-color: white;
+  padding: 20px;
 }
 
 .top {
@@ -52,4 +53,71 @@ span {
   font-weight: 600;
   color: #888;
   margin-left: 10px;
+} */
+
+/* src/styles/Sidebar.css */
+
+.sidebar {
+  width: 250px; /* Fixed sidebar width */
+  min-height: 100vh; /* Full height */
+  border-right: 0.5px solid rgb(228, 225, 225);
+  background-color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.top {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: purple;
+}
+
+hr {
+  height: 0;
+  border: 0.5px solid rgb(228, 225, 225);
+  margin-bottom: 20px;
+}
+
+.center {
+  flex: 1; /* Take remaining space */
+  padding-left: 10px;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+li:hover {
+  background-color: #ece8ff;
+}
+
+.icon {
+  font-size: 20px;
+  color: #7451f8;
+}
+
+span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #555;
 }
