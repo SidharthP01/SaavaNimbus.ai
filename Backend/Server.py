@@ -3,6 +3,16 @@ import mysql.connector
 from flask_cors import CORS
 import json
 from datetime import datetime, timedelta
+from openai import OpenAI
+import os
+from dotenv import load_dotenv
+
+
+load_dotenv()  # Load environment variables
+
+api_key = os.getenv("OPENAI_API_KEY")
+print(api_key)  # Just for testing (remove this in production)
+
 
 app = Flask(__name__)
 CORS(app)  # Allow frontend to fetch data
@@ -15,6 +25,11 @@ db_config = {
     "database": "mysql_server",
     "port": 3306
 }
+
+client = OpenAI(
+  api_key="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"
+)
+
 
 # Function to establish a database connection
 def get_db_connection():
@@ -136,9 +151,10 @@ def signup():
         conn.close()
         return jsonify({"success": False, "message": str(err)}), 400
 
-# New Route 7: Fetch all data from the Prediction table (Limited to 100 rows)
-@app.route("/prediction_data", methods=["GET"])
-def get_prediction_data():
+# New Route 7: Fetch all data from Prediction table and send to ChatGPT
+# Route 8: Fetch and display raw Prediction table data
+@app.route("/api/predictions", methods=["GET"])
+def get_raw_prediction_data():
     conn = get_db_connection()
     if conn is None:
         return jsonify({"error": "Database connection failed"}), 500
@@ -148,7 +164,40 @@ def get_prediction_data():
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
-    return jsonify(rows)
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    return jsonify({"predictions": rows})
+
+
+# Route 9: Fetch predictions and display only AI-generated insights
+@app.route("/api/insights", methods=["GET"])
+def get_prediction_insights():
+    conn = get_db_connection()
+    if conn is None:
+        return jsonify({"error": "Database connection failed"}), 500
+
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM prediction LIMIT 100")
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    insights = generate_insights(rows)
+    return jsonify({"insights": insights})
+
+def generate_insights(data):
+    prompt = ("You are a cloud cost optimization assistant. Analyze the following cloud cost prediction data: \n"
+              "Each entry contains InstanceId, cpu_anomaly, cpu_cost, network_in_anomaly, network_in_cost, "
+              "network_out_anomaly, network_out_cost, predicted_cpu, predicted_network_in, predicted_network_out, "
+              "scaling_recommendation, timestamp, and total_cost.\n"
+              "Identify patterns, highlight cost spikes, explain scaling recommendations, and suggest strategies to optimize CPU "
+              "and network usage. Focus on reducing costs without compromising performance.\n\n"
+              f"Data: {data}")
+    
+    response = client.chat.completions.create(
+      model="gpt-4o-mini",
+      messages=[{"role": "system", "content": "You are a cloud cost optimization assistant."},
+                {"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content
+if __name__ == "_main_":
+    app.run(host="0.0.0.0", port=5000,debug=True)
