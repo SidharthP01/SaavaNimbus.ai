@@ -27,8 +27,7 @@ db_config = {
 }
 
 client = OpenAI(
-  api_key="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"
-)
+  api_key="OPENAI_API_KEY")
 
 
 # Function to establish a database connection
