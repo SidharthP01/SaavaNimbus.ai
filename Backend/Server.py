@@ -27,7 +27,7 @@ db_config = {
 }
 
 client = OpenAI(
-  api_key="OPENAI_API_KEY")
+  api_key = api_key)
 
 
 # Function to establish a database connection
@@ -198,5 +198,5 @@ def generate_insights(data):
                 {"role": "user", "content": prompt}]
     )
     return response.choices[0].message.content
-if __name__ == "_main_":
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000,debug=True)
