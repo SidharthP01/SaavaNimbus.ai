@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 import Widget from "../components/Widget";
 import Featured from "../components/Featured";
 import InstanceChartContainer from "../components/InstanceChartContainer";
-
+import InsightsDisplay from "../components/InsightsContainer";
 const Dashboard = () => {
   return (
     <div className="dashboard">
@@ -14,7 +14,7 @@ const Dashboard = () => {
         <Navbar />
         <div className="dashboard-content">
           <div className="widgets">
-            <Widget />
+            <InsightsDisplay />
             <Widget />
           </div>
           <div className="charts">
