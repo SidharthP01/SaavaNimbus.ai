@@ -159,7 +159,7 @@ def get_raw_prediction_data():
         return jsonify({"error": "Database connection failed"}), 500
 
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM prediction LIMIT 100")
+    cursor.execute("SELECT * FROM prediction ORDER BY timestamp DESC LIMIT 100")
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -198,5 +198,46 @@ def generate_insights(data):
                 {"role": "user", "content": prompt}]
     )
     return response.choices[0].message.content
+
+
+@app.route("/api/prediction/<instance_id>", methods=["GET"])
+def get_predicted_metrics(instance_id):
+    print(f"Received request for predicted data of instance: {instance_id}")
+    
+    start_time = datetime(2025, 1, 30)
+    end_time = datetime(2025, 2, 9)
+    
+    conn = get_db_connection()
+    if conn is None:
+        return jsonify({"error": "Database connection failed"}), 500
+    
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT timestamp, predicted_cpu, predicted_network_in, predicted_network_out 
+        FROM prediction 
+        WHERE InstanceId = %s 
+        AND timestamp >= %s 
+        AND timestamp < %s
+        ORDER BY timestamp
+    """, (instance_id, start_time, end_time))
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    print(f"Fetched {len(rows)} rows from prediction table")
+    for row in rows:
+        row["predicted_cpu"] = float(row["predicted_cpu"]) if row["predicted_cpu"] else 0.0
+        row["predicted_network_in"] = float(row["predicted_network_in"]) if row["predicted_network_in"] else 0.0
+        row["predicted_network_out"] = float(row["predicted_network_out"]) if row["predicted_network_out"] else 0.0
+        
+        if isinstance(row["timestamp"], datetime):
+            row["timestamp"] = row["timestamp"].strftime('%Y-%m-%d %H:%M:%S')
+    
+    response_json = json.dumps(rows, indent=2)
+    print(response_json[:1000])
+    return jsonify(rows)
+
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000,debug=True)
