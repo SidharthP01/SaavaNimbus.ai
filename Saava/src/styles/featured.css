@@ -1,75 +1,38 @@
-.featured {
-  flex: 2;
-  -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
-  box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
-  padding: 10px;
-}
-.top {
+.featured-container {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: gray;
-}
-.title {
-  font-size: 16px;
-  font-weight: 500;
-}
-
-.bottom {
+  
+  gap: 20px;
   padding: 20px;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-  gap: 15px;
-}
-.featuredChart {
-  width: 120px;
-  height: 100px;
-}
-
-.title {
-  font-weight: 500;
-  color: gray;
-}
-
-.amount {
-  font-size: 30px;
-}
-
-.desc {
-  font-weight: 300;
-  font-size: 12px;
-  color: gray;
-  text-align: center;
-}
-
-.summary {
+  /* border: 2px solid black; */
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-.item {
+.featured-box {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  /* border: 2px solid gray; */
   text-align: center;
+  width: 100%;
+  min-width: 200px;
+  box-sizing: border-box;
+  margin:0;
 }
 
-.itemTitle {
+.featured-box h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  border-bottom: 1px solid gray;
+  padding-bottom: 5px;
+}
+
+.featured-box p {
   font-size: 14px;
-  color: gray;
-}
-
-.itemResult {
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
-  font-size: 14px;
-}
-.positive {
-  color: green;
-}
-
-.negative {
-  color: red;
+  color: #666;
 }
