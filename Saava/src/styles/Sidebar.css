@@ -75,6 +75,7 @@ span {
 }
 
 .logo {
+  font-family: Circular, Arial, sans-serif;
   font-size: 20px;
   font-weight: bold;
   color: purple;

@@ -237,6 +237,60 @@ def get_predicted_metrics(instance_id):
     print(response_json[:1000])
     return jsonify(rows)
 
+@app.route("/api/anomalies/<instance_id>", methods=["GET"])
+def get_anomaly_and_avg_cpu(instance_id):
+    print(f"Fetching anomaly data and avg CPU for instance: {instance_id} on 9th Feb 2025")
+
+    target_date = datetime(2025, 2, 9)
+
+    conn = get_db_connection()
+    if conn is None:
+        return jsonify({"error": "Database connection failed"}), 500
+
+    cursor = conn.cursor(dictionary=True)
+
+    # Fetch the latest anomaly data for Feb 9, 2025
+    cursor.execute("""
+        SELECT cpu_anomaly, network_in_anomaly, network_out_anomaly, timestamp 
+        FROM prediction 
+        WHERE InstanceId = %s 
+        AND DATE(timestamp) = %s 
+        ORDER BY timestamp DESC 
+        LIMIT 1
+    """, (instance_id, target_date.date()))
+    latest_anomaly = cursor.fetchone()
+
+    # Fetch the average predicted CPU for Feb 9, 2025
+    cursor.execute("""
+        SELECT AVG(predicted_cpu) as avg_predicted_cpu 
+        FROM prediction 
+        WHERE InstanceId = %s 
+        AND DATE(timestamp) = %s
+    """, (instance_id, target_date.date()))
+    avg_predicted_cpu = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    # Determine anomaly status
+    anomaly_status = {
+        "cpu_anomaly": "Anomaly detected" if latest_anomaly and latest_anomaly["cpu_anomaly"] != 0 else "No anomaly",
+        "network_in_anomaly": "Anomaly detected" if latest_anomaly and latest_anomaly["network_in_anomaly"] != 0 else "No anomaly",
+        "network_out_anomaly": "Anomaly detected" if latest_anomaly and latest_anomaly["network_out_anomaly"] != 0 else "No anomaly"
+    }
+
+    response = {
+        "latest_timestamp": latest_anomaly["timestamp"] if latest_anomaly else None,
+        "cpu_anomaly_status": anomaly_status["cpu_anomaly"],
+        "network_in_anomaly_status": anomaly_status["network_in_anomaly"],
+        "network_out_anomaly_status": anomaly_status["network_out_anomaly"],
+        "avg_predicted_cpu_9_feb": round(avg_predicted_cpu["avg_predicted_cpu"], 2) if avg_predicted_cpu and avg_predicted_cpu["avg_predicted_cpu"] else 0.0
+    }
+
+    return jsonify(response)
+
+
+
 
 
 if __name__ == "__main__":

@@ -49,7 +49,7 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <div className="top">
-        <span className="logo">Cloud</span>
+        <span className="logo">SaavaNimbus.ai</span>
       </div>
       <hr />
       <div className="center">
