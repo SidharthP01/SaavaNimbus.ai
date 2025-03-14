@@ -51,22 +51,22 @@ const Login = () => {
         <h2>{isLogin ? "Login" : "Sign Up"}</h2>
         <form onSubmit={isLogin ? handleLogin : handleSignUp}>
           <div className="input-group">
-            <label>Username</label>
+            {/* <label>Username</label> */}
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
+              placeholder="username"
               required
             />
           </div>
           <div className="input-group">
-            <label>Password</label>
+            {/* <label>Password</label> */}
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder="password"
               required
             />
           </div>
