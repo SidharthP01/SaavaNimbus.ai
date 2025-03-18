@@ -289,7 +289,87 @@ def get_anomaly_and_avg_cpu(instance_id):
 
     return jsonify(response)
 
+@app.route("/api/anomalies/all", methods=["GET"])
+def get_all_anomalies_and_avg_cpu():
+    INSTANCE_MAP = {
+        "i-0bd423f94480ad306": "1",
+        "i-02293990e2fd9c785": "2",
+        "i-0821f01cd4fd41778": "3",
+        "i-0c1b807831b124a06": "4"
+    }
+    
+    target_date = datetime(2025, 2, 9)
+    
+    conn = get_db_connection()
+    if conn is None:
+        return jsonify({"error": "Database connection failed"}), 500
 
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        instance_ids = list(INSTANCE_MAP.keys())
+        params = [target_date.strftime('%Y-%m-%d')] + instance_ids
+        
+        # Get latest anomalies
+        query_anomalies = f"""
+            SELECT p.InstanceId, p.cpu_anomaly, p.network_in_anomaly,
+                   p.network_out_anomaly, p.timestamp
+            FROM prediction p
+            INNER JOIN (
+                SELECT InstanceId, MAX(timestamp) as max_ts
+                FROM prediction
+                WHERE DATE(timestamp) = %s
+                AND InstanceId IN ({','.join(['%s']*len(instance_ids))})
+                GROUP BY InstanceId
+            ) latest ON p.InstanceId = latest.InstanceId AND p.timestamp = latest.max_ts
+        """
+        
+        cursor.execute(query_anomalies, params)
+        latest_anomalies = {
+            INSTANCE_MAP[row['InstanceId']]: row for row in cursor.fetchall()
+        }
+
+        # Get average CPU
+        query_avg = f"""
+            SELECT InstanceId, 
+                   ROUND(AVG(CAST(predicted_cpu AS DECIMAL(10,2))), 2) as avg_predicted_cpu
+            FROM prediction
+            WHERE DATE(timestamp) = %s
+            AND InstanceId IN ({','.join(['%s']*len(instance_ids))})
+            GROUP BY InstanceId
+        """
+        
+        cursor.execute(query_avg, params)
+        avg_cpu = {
+            INSTANCE_MAP[row['InstanceId']]: row['avg_predicted_cpu']
+            for row in cursor.fetchall()
+        }
+
+    except Exception as e:
+        print(f"Database error: {str(e)}")
+        return jsonify({
+            "error": "Database operation failed",
+            "details": str(e)
+        }), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+    # Build response with fallback values
+    response = {}
+    for instance_num in ['1', '2', '3', '4']:
+        anomaly = latest_anomalies.get(instance_num, {})
+        avg = avg_cpu.get(instance_num, 0.0)
+        
+        response[instance_num] = {
+            "latest_timestamp": anomaly.get('timestamp'),
+            "cpu_anomaly_status": "Anomaly detected" if anomaly.get('cpu_anomaly', 0) != 0 else "No anomaly",
+            "network_in_anomaly_status": "Anomaly detected" if anomaly.get('network_in_anomaly', 0) != 0 else "No anomaly",
+            "network_out_anomaly_status": "Anomaly detected" if anomaly.get('network_out_anomaly', 0) != 0 else "No anomaly",
+            "avg_predicted_cpu_9_feb": float(avg) if avg else 0.0
+        }
+
+    return jsonify(response)
 
 
 
