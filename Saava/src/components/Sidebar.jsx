@@ -39,39 +39,47 @@
 
 // src/components/Sidebar.jsx
 import React from "react";
-import "../styles/Sidebar.css";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import PersonIcon from "@mui/icons-material/Person";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import LogoutIcon from "@mui/icons-material/Logout";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import "../styles/Sidebar.css";
 
 const Sidebar = () => {
   return (
     <div className="sidebar">
-      <div className="top">
-        <span className="logo">SaavaNimbus.ai</span>
+      <div className="sidebar-header">
+        <h1 className="logo">SaavaNimbus.ai</h1>
       </div>
-      <hr />
-      <div className="center">
+      <hr className="divider" />
+      <nav className="menu-container">
         <ul className="menu">
           <li>
-            <DashboardIcon className="icon" />
-            <span>Dashboard</span>
+            <button className="menu-button">
+              <AccountCircleIcon className="menu-icon" />
+              <span>Profile</span>
+            </button>
           </li>
           <li>
-            <PersonIcon className="icon" />
-            <span>Users</span>
+            <button className="menu-button">
+              <DashboardIcon className="menu-icon" />
+              <span>Dashboard</span>
+            </button>
           </li>
           <li>
-            <AccountCircleIcon className="icon" />
-            <span>Profile</span>
+            <button className="menu-button">
+              <NotificationsIcon className="menu-icon" />
+              <span>Alerts</span>
+            </button>
           </li>
           <li>
-            <LogoutIcon className="icon" />
-            <span>Logout</span>
+            <button className="menu-button logout-button">
+              <LogoutIcon className="menu-icon" />
+              <span>Logout</span>
+            </button>
           </li>
         </ul>
-      </div>
+      </nav>
     </div>
   );
 };

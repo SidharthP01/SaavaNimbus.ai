@@ -1,18 +1,3 @@
-// import React from "react";
-// import "../styles/widget.css";
-
-// const Widget = () => {
-//   return (
-//     <div className="widget">
-//       <div className="widget-content">
-//         <h3 className="widget-title">Widget Title</h3>
-//         <p className="widget-data">Sample Data</p>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Widget;
 import React, { useState, useEffect } from 'react';
 import '../styles/widget.css';
 
@@ -99,21 +84,9 @@ const Widget = () => {
                     Network Out Status: {anomalies[id].network_out_anomaly_status}
                   </div>
                   <div className="cpu-usage">
-                    <div className="cpu-header">
-                      <span>Average Predicted CPU Usage</span>
-                      <span className="cpu-percent">
-                        {anomalies[id].avg_predicted_cpu_9_feb}%
-                      </span>
-                    </div>
-                    <div className="cpu-progress">
-                      <div 
-                        className="progress-bar" 
-                        style={{ width: `${anomalies[id].avg_predicted_cpu_9_feb}%` }}
-                      />
-                    </div>
-                    <div className="cpu-labels">
-                      <span>0%</span>
-                      <span>100%</span>
+                    <div className="status-item">
+                      <span className="status-icon prediction">📈</span>
+                       Predicted CPU Usage: {anomalies[id].avg_predicted_cpu_9_feb}%
                     </div>
                   </div>
                 </div>
