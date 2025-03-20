@@ -371,6 +371,31 @@ def get_all_anomalies_and_avg_cpu():
 
     return jsonify(response)
 
+# Route 10: Fetch cost summary data
+@app.route("/api/cost-summary", methods=["GET"])
+def get_cost_summary():
+    conn = get_db_connection()
+    if conn is None:
+        return jsonify({"error": "Database connection failed"}), 500
+
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT * 
+        FROM aws_cost_summary 
+        LIMIT 100
+    """)
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    # Convert decimal values to float for JSON serialization
+    for row in rows:
+        if 'estimated_cost' in row:
+            row['estimated_cost'] = float(row['estimated_cost']) if row['estimated_cost'] else 0.0
+        if 'timestamp' in row and isinstance(row['timestamp'], datetime):
+            row['timestamp'] = row['timestamp'].strftime('%Y-%m-%d %H:%M:%S')
+    
+    return jsonify(rows)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+/* insights.css */
 /* Container */
 .insights-container {
   max-width: 700px;
@@ -10,42 +11,133 @@
   flex: 1;
 }
 
-/* Button */
+/* Cost Display Section */
+.cost-display {
+  background: linear-gradient(135deg, #6c63ff 0%, #483d8b 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: slideIn 0.5s ease-out;
+}
+
+.cost-label {
+  font-size: 1.1rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.cost-value {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Button Styles */
 .insights-btn {
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 12px 25px;
+  font-size: 1.1rem;
   background-color: #6c63ff;
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   margin-bottom: 20px;
-  transition: background 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.5px;
 }
 
 .insights-btn:disabled {
   background-color: #a9a9a9;
+  cursor: not-allowed;
 }
 
 .insights-btn:hover:not(:disabled) {
   background-color: #574bff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
 }
 
 /* Insights Box */
 .insights-box {
   padding: 20px;
   background-color: #fff;
-  border: 1px solid #ddd;
+  border: none;
   border-radius: 8px;
   font-size: 15px;
   line-height: 1.6;
   white-space: pre-wrap;
-  min-height: 100px;
+  min-height: 150px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
-/* Error */
+.insights-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Error Message */
 .error {
-  color: red;
+  color: #ff4444;
   font-size: 14px;
   margin-bottom: 20px;
+  text-align: center;
+  padding: 10px;
+  background-color: #ffecec;
+  border-radius: 5px;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes dots {
+  0%, 20% { content: "."; }
+  40% { content: ".."; }
+  60% { content: "..."; }
+  80%, 100% { content: " "; }
+}
+
+/* Loading States */
+.cost-value[data-loading="true"]::after {
+  content: "...";
+  animation: dots 1.5s infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .insights-container {
+    margin: 10px;
+    padding: 15px;
+  }
+
+  .cost-display {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .cost-value {
+    font-size: 1.75rem;
+  }
+
+  .insights-btn {
+    width: 100%;
+    padding: 12px;
+  }
 }
