@@ -3,15 +3,16 @@ import mysql.connector
 from flask_cors import CORS
 import json
 from datetime import datetime, timedelta
-from openai import OpenAI
+#from openai import OpenAI
+import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 
 
 load_dotenv()  # Load environment variables
 
-api_key = os.getenv("OPENAI_API_KEY")
-print(api_key)  # Just for testing (remove this in production)
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+#print(api_key)  # Just for testing (remove this in production)
 
 
 app = Flask(__name__)
@@ -26,8 +27,8 @@ db_config = {
     "port": 3306
 }
 
-client = OpenAI(
-  api_key = api_key)
+# client = OpenAI(
+#   api_key = api_key)
 
 
 # Function to establish a database connection
@@ -166,8 +167,6 @@ def get_raw_prediction_data():
 
     return jsonify({"predictions": rows})
 
-
-# Route 9: Fetch predictions and display only AI-generated insights
 @app.route("/api/insights", methods=["GET"])
 def get_prediction_insights():
     conn = get_db_connection()
@@ -175,7 +174,18 @@ def get_prediction_insights():
         return jsonify({"error": "Database connection failed"}), 500
 
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM prediction LIMIT 100")
+    
+    query = """
+        SELECT 
+            p.InstanceId,
+            p.predicted_cpu,
+            e.InstanceType
+        FROM prediction p
+        LEFT JOIN ec2_metrics e ON p.InstanceId = e.InstanceId
+        LIMIT 100
+    """
+    
+    cursor.execute(query)
     rows = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -184,20 +194,40 @@ def get_prediction_insights():
     return jsonify({"insights": insights})
 
 def generate_insights(data):
-    prompt = ("You are a cloud cost optimization assistant. Analyze the following cloud cost prediction data: \n"
-              "Each entry contains InstanceId, cpu_anomaly, cpu_cost, network_in_anomaly, network_in_cost, "
-              "network_out_anomaly, network_out_cost, predicted_cpu, predicted_network_in, predicted_network_out, "
-              "scaling_recommendation, timestamp, and total_cost.\n"
-              "Identify patterns, highlight cost spikes, explain scaling recommendations, and suggest strategies to optimize CPU "
-              "and network usage. Focus on reducing costs without compromising performance.\n\n"
-              f"Data: {data}")
-    
-    response = client.chat.completions.create(
-      model="gpt-4o-mini",
-      messages=[{"role": "system", "content": "You are a cloud cost optimization assistant."},
-                {"role": "user", "content": prompt}]
+    prompt = (
+        "You are an AWS EC2 cost optimization expert. Based on the following details, generate a cost optimization analysis in a structured format:\n\n"
+        "### Input:\n"
+        "- Provider: AWS\n"
+        "- Current Instance Type: t2.medium\n"
+        "- Predicted CPU Utilization: 4%\n"
+        "- Pricing Model: On-Demand Linux instances (no Savings Plan or Reserved Instances applied)\n\n"
+        "### Tasks:\n"
+        "1. Recommend a more cost-effective EC2 instance based on the low CPU utilization.\n"
+        "2. Provide the estimated monthly On-Demand cost of the current instance.\n"
+        "3. Provide the estimated monthly On-Demand cost of the recommended instance.\n"
+        "4. Calculate and display both absolute savings (in USD) and percentage savings.\n"
+        "5. Suggest whether switching to a Savings Plan or Reserved Instance is beneficial.\n"
+        "6. Minimize the final recommendation to just 2-3 words.\n"
+        "7. Format the response clearly, avoiding * for bullet points and keeping proper spacing.\n\n"
+        "### Output Format:\n"
+        "\nCurrent Instance: [Current Instance Type]\n"
+        "    Monthly Cost: [$X.XX]\n\n"
+        "Recommended Instance: [Recommended Instance Type]\n"
+        "    Monthly Cost: [$X.XX]\n\n"
+        "Savings:\n"
+        "    Absolute Savings: [$X.XX]\n"
+        "    Percentage Savings: [X.X%]\n\n"
+        "Cost Plan: [Short recommendation, e.g., Consider Savings Plan]\n\n"
+        "Final Recommendation: [2-3 words, e.g., 'Switch to t2.nano']"
+        f"{data}"
     )
-    return response.choices[0].message.content
+
+    model = genai.GenerativeModel("gemini-1.5-pro")
+    
+    response = model.generate_content(prompt)
+    
+    return response.text.strip() if response.text else "No insights generated."
+
 
 
 @app.route("/api/prediction/<instance_id>", methods=["GET"])
@@ -298,7 +328,7 @@ def get_all_anomalies_and_avg_cpu():
         "i-0c1b807831b124a06": "4"
     }
     
-    target_date = datetime(2025, 2, 9)
+    target_date = datetime(2025, 3, 20)
     
     conn = get_db_connection()
     if conn is None:
